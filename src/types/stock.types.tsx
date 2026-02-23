@@ -26,3 +26,12 @@ export interface Portfolio{
     gainLoss:number,
     holdings:Stock[],
 }
+
+export interface Holding {
+  id: string;
+  symbol: string;
+  qty: number;
+  investedValue: number;  // = qty * avgPrice
+  currentValue: number;   // = qty * ltp
+  totalReturn: number;    // = currentValue - investedValue
+}
