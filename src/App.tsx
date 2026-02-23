@@ -1,4 +1,4 @@
-
+import {useState} from "react";
 
 // Data
 import { stocks, trades } from './data/stockData';
