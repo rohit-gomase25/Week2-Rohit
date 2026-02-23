@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import {useState} from "react";
 
 // Data
 import { stocks, trades, holdings } from './data/stockData';
