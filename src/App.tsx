@@ -4,7 +4,6 @@ import { useState } from "react";
 import { stocks, trades, holdings, positions } from './data/stockData';
 
 // Types
-// Added Position to the import list
 import type { Stock, Trade, Holding, Position } from './types/stock.types';
 
 // Components
@@ -20,18 +19,15 @@ function App() {
   const [sectorFilter, setSectorFilter] = useState('');
   const [tradeHistory, setTradeHistory] = useState<Trade[]>(trades);
 
-  // Filter stocks based on search and sector
+  // Filter logic
   const filteredStocks = stocks.filter(s => {
     const matchesSearch = 
       s.symbol.toLowerCase().includes(searchQuery.toLowerCase()) || 
       s.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
     const matchesSector = !sectorFilter || s.sector === sectorFilter;
-    
     return matchesSearch && matchesSector;
   });
 
-  // Add a new trade
   const handleNewTrade = (input: Omit<Trade, 'id' | 'date'>) => {
     const newTrade: Trade = {
       ...input,
@@ -64,42 +60,37 @@ function App() {
 
       <PortfolioSummary availableStocks={stocks} />
 
+      {/* LIVE QUOTES TABLE */}
       <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Live Quotes</h2>
       <DataTable<Stock>
         data={filteredStocks}
         rowKey='id'
         onRowClick={setSelectedStock}
-        emptyMessage='No stocks match your search.'
         columns={[
-          { key: 'symbol', header: 'Symbol' },
-          { key: 'name',   header: 'Company' },
-          { key: 'price',  header: 'Price',
-            render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'changePct', header: 'Change %',
+          { key: 'symbol', header: 'Symbol', sortable: true },
+          { key: 'name',   header: 'Company', sortable: true },
+          { key: 'price',  header: 'Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
+          { key: 'changePct', header: 'Change %', sortable: true,
             render: v => {
               const n = Number(v);
-              return <span style={{ color: n >= 0 ? 'green' : 'red' }}>
+              return <span style={{ color: n >= 0 ? '#166534' : '#991B1B' }}>
                 {n >= 0 ? '+' : ''}{n.toFixed(2)}%
               </span>;
             }},
-          { key: 'volume', header: 'Volume',
-            render: v => Number(v).toLocaleString() },
         ]}
       />
 
-      {/* --- HOLDINGS SECTION --- */}
+      {/* HOLDINGS TABLE */}
       <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Holdings</h2>
       <DataTable<Holding>
         data={holdings}
         rowKey='id'
         columns={[
-          { key: 'symbol', header: 'Symbol' },
-          { key: 'qty', header: 'Qty' },
-          { key: 'investedValue', header: 'Invested Value',
-            render: v => `$${Number(v).toLocaleString()}` },
-          { key: 'currentValue', header: 'Current Value',
-            render: v => `$${Number(v).toLocaleString()}` },
-          { key: 'totalReturn', header: 'Total Return',
+          { key: 'symbol', header: 'Symbol', sortable: true },
+          { key: 'qty', header: 'Qty', sortable: true },
+          { key: 'investedValue', header: 'Invested', sortable: true, render: v => `$${Number(v).toLocaleString()}` },
+          { key: 'currentValue', header: 'Current', sortable: true, render: v => `$${Number(v).toLocaleString()}` },
+          { key: 'totalReturn', header: 'Return', sortable: true,
             render: v => {
               const n = Number(v);
               return <span style={{ color: n >= 0 ? '#166534' : '#991B1B', fontWeight: 'bold' }}>
@@ -109,47 +100,61 @@ function App() {
         ]}
       />
 
-      {/* --- POSITIONS SECTION --- */}
+      {/* POSITIONS TABLE */}
       <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Positions</h2>
       <DataTable<Position>
         data={positions}
         rowKey='id'
         columns={[
-          { key: 'symbol', header: 'Symbol' },
-          { key: 'qty', header: 'Qty' },
-          { key: 'avgPrice', header: 'Avg Price',
-            render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'ltp', header: 'LTP',
-            render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'pnl', header: 'P&L',
-            render: v => {
+          { key: 'symbol', header: 'Symbol', sortable: true },
+          { key: 'qty', header: 'Qty', sortable: true },
+          { key: 'avgPrice', header: 'Avg Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
+          { key: 'ltp', header: 'LTP', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
+          { 
+            key: 'pnl', 
+            header: 'P&L',
+            sortable: true,
+            render: (v) => {
               const n = Number(v);
-              return <span style={{ color: n >= 0 ? 'green' : 'red' }}>
-                {n >= 0 ? '+' : ''}${n.toFixed(2)}
-              </span>;
+              return (
+                <span style={{ color: n >= 0 ? '#166534' : '#991B1B', fontWeight: 'bold' }}>
+                  {n >= 0 ? '+' : ''}${n.toFixed(2)}
+                </span>
+              );
             }
           },
-          { key: 'pnlPct', header: 'P&L %',
-            render: v => `${Number(v).toFixed(2)}%` },
+          { 
+            key: 'pnlPct', 
+            header: 'P&L %',
+            sortable: true,
+            render: (v) => {
+              const n = Number(v);
+              return (
+                <span style={{ color: n >= 0 ? '#166534' : '#991B1B' }}>
+                  {n >= 0 ? '+' : ''}{n.toFixed(2)}%
+                </span>
+              );
+            }
+          },
         ]}
       />
 
+      {/* TRADE HISTORY TABLE */}
       <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Trade History</h2>
       <DataTable<Trade>
         data={tradeHistory}
         rowKey='id'
         columns={[
-          { key: 'symbol',   header: 'Symbol' },
-          { key: 'type',     header: 'Type',
-            render: v => <strong style={{ color: v === 'BUY' ? 'green' : 'red' }}>
-              {String(v)}</strong> },
-          { key: 'quantity', header: 'Qty' },
-          { key: 'price',    header: 'Price',
-            render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'date',     header: 'Date' },
+          { key: 'symbol',   header: 'Symbol', sortable: true },
+          { key: 'type',     header: 'Type', sortable: true,
+            render: v => <strong style={{ color: v === 'BUY' ? '#166534' : '#991B1B' }}>{String(v)}</strong> },
+          { key: 'quantity', header: 'Qty', sortable: true },
+          { key: 'price',    header: 'Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
+          { key: 'date',     header: 'Date', sortable: true },
         ]}
       />
 
+      {/* NEW TRADE FORM */}
       <h2 style={{ color: '#1E40AF', marginTop: 32 }}>New Trade</h2>
       <TradeForm
         stocks={stocks}
