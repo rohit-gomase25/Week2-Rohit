@@ -85,6 +85,8 @@ function App() {
       <DataTable<Holding>
         data={holdings}
         rowKey='id'
+        filterKey='symbol'
+        pageSize={7}
         columns={[
           { key: 'symbol', header: 'Symbol', sortable: true },
           { key: 'qty', header: 'Qty', sortable: true },
@@ -105,6 +107,8 @@ function App() {
       <DataTable<Position>
         data={positions}
         rowKey='id'
+        filterKey='symbol'
+        pageSize={7}
         columns={[
           { key: 'symbol', header: 'Symbol', sortable: true },
           { key: 'qty', header: 'Qty', sortable: true },
