@@ -35,3 +35,14 @@ export interface Holding {
   currentValue: number;   // = qty * ltp
   totalReturn: number;    // = currentValue - investedValue
 }
+
+
+export interface Position {
+  id: string;
+  symbol: string;
+  qty: number;
+  avgPrice: number;    // average buy price
+  ltp: number;         // last traded price (current market price)
+  pnl: number;         // profit & loss in dollars
+  pnlPct: number;      // profit & loss as a percentage
+}
