@@ -14,6 +14,7 @@ import SearchBar from './components/SearchBar';
 import DataTable from './components/DataTable';
 import TradeForm from './components/TradeForm';
 import TradeFeature from './features/trades/TradeFeature';
+import LiveQuotesFeature from './features/quotes/LiveQuotesFeature';
 
 function App() {
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
@@ -63,23 +64,12 @@ function App() {
       <PortfolioSummary availableStocks={stocks} />
 
       {/* LIVE QUOTES TABLE */}
-      <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Live Quotes</h2>
-      <DataTable<Stock>
-        data={filteredStocks}
-        rowKey='id'
-        onRowClick={setSelectedStock}
-        columns={[
-          { key: 'symbol', header: 'Symbol', sortable: true },
-          { key: 'name',   header: 'Company', sortable: true },
-          { key: 'price',  header: 'Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'changePct', header: 'Change %', sortable: true,
-            render: v => {
-              const n = Number(v);
-              return <span style={{ color: n >= 0 ? '#166534' : '#991B1B' }}>
-                {n >= 0 ? '+' : ''}{n.toFixed(2)}%
-              </span>;
-            }},
-        ]}
+      <LiveQuotesFeature
+        stocks={stocks}
+        selectedStock={selectedStock}
+        onSelectStock={setSelectedStock}        
+        onSearch={setSearchQuery}        
+        onFilterChange={setSectorFilter}
       />
 
       {/* HOLDINGS TABLE */}
