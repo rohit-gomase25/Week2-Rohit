@@ -6,12 +6,14 @@ import { stocks, trades, holdings, positions } from './data/stockData';
 // Types
 import type { Stock, Trade, Holding, Position } from './types/stock.types';
 
+
 // Components
 import StockCard from './components/StockCard';
 import PortfolioSummary from './components/PortfolioSummary';
 import SearchBar from './components/SearchBar';
 import DataTable from './components/DataTable';
 import TradeForm from './components/TradeForm';
+import TradeFeature from './features/trades/TradeFeature';
 
 function App() {
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
@@ -144,18 +146,11 @@ function App() {
       />
 
       {/* TRADE HISTORY TABLE */}
-      <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Trade History</h2>
-      <DataTable<Trade>
-        data={tradeHistory}
-        rowKey='id'
-        columns={[
-          { key: 'symbol',   header: 'Symbol', sortable: true },
-          { key: 'type',     header: 'Type', sortable: true,
-            render: v => <strong style={{ color: v === 'BUY' ? '#166534' : '#991B1B' }}>{String(v)}</strong> },
-          { key: 'quantity', header: 'Qty', sortable: true },
-          { key: 'price',    header: 'Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'date',     header: 'Date', sortable: true },
-        ]}
+      <TradeFeature
+        tradeHistory={tradeHistory}
+        stocks={stocks}
+        selectedStock={selectedStock}
+        onSubmitTrade={handleNewTrade}
       />
 
       {/* NEW TRADE FORM */}
