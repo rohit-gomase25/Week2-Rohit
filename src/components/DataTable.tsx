@@ -42,7 +42,7 @@ function DataTable<T extends object>({
 
   // Toggle sort direction on each header click
   const handleSort = (key: keyof T) => {
-    setSort(prev => ({
+    setSort(prev =>     ({
       key,
       dir: prev.key === key && prev.dir === 'asc' ? 'desc' : 'asc',
     }));
