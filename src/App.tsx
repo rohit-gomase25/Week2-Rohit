@@ -1,85 +1,54 @@
-import  { lazy, useState } from 'react';
-//                ^    ^
-//                |    useState — you already know this
-//                lazy — NEW: added to the import
-
-
-// ── Data imports (UNCHANGED) ─────────────────────────────────────────
+import { lazy, useState } from 'react';
+import PriceTicker from './components/PriceTicker';
 import { stocks, trades, positions, holdings } from './data/stockData';
- 
-// ── Types (UNCHANGED) ────────────────────────────────────────────────
-import type{ Stock, Trade } from './types/stock.types';
- 
-// ── Boundary wrapper (EAGER import — NOT lazy) ───────────────────────
+import type { Stock, Trade } from './types/stock.types';
 import SuspenseBoundary from './boundaries/SuspenseBoundary';
-//
-// WHY NOT lazy? SuspenseBoundary SHOWS the skeleton while things load.
-// It needs to be ready instantly.
- 
-// ── Skeleton components (EAGER imports — NOT lazy) ───────────────────
-import TableSkeleton    from './skeletons/TableSkeleton';
+import TableSkeleton from './skeletons/TableSkeleton';
 import CardGridSkeleton from './skeletons/CardGridSkeleton';
-import FormSkeleton     from './skeletons/FormSkeleton';
-// WHY NOT lazy? These ARE the fallback UI.
-// They must exist BEFORE the real components arrive.
+import FormSkeleton from './skeletons/FormSkeleton';
 
-
-// ── Feature components (LAZY — each becomes a separate chunk) ─────────
- 
 const LiveQuotesFeature = lazy(function() {
   return import('./features/quotes/LiveQuotesFeature');
 });
- 
+
 const PortfolioFeature = lazy(function() {
   return import('./features/portfolio/PortfolioFeature');
 });
- 
+
 const PositionsFeature = lazy(function() {
   return import('./features/positions/PositionFeature');
 });
- 
+
 const HoldingsFeature = lazy(function() {
   return import('./features/holdings/HoldingsFeature');
 });
- 
+
 const TradeFeature = lazy(function() {
   return import('./features/trades/TradeFeature');
 });
- 
-// After npm run build, Vite creates:
-//   LiveQuotesFeature-BxYz12.js
-//   PortfolioFeature-CdEf34.js
-//   PositionsFeature-GhIj56.js
-//   HoldingsFeature-KlMn78.js
-//   TradeFeature-OpQr90.js
-
 
 type NewTradeInput = Omit<Trade, 'id' | 'date'>;
- 
+
 function App() {
- 
-  // ── State (COMPLETELY UNCHANGED from Module 1) ─────────────────────
-  const [selectedStock,  setSelectedStock]  = useState<Stock | null>(null);
-  const [searchQuery,    setSearchQuery]    = useState('');
-  const [sectorFilter,   setSectorFilter]   = useState('');
-  const [tradeHistory,   setTradeHistory]   = useState<Trade[]>(trades);
- 
-  // ── Filtered stocks (UNCHANGED) ─────────────────────────────────────
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sectorFilter, setSectorFilter] = useState('');
+  const [tradeHistory, setTradeHistory] = useState<Trade[]>(trades);
+
   var filteredStocks = stocks.filter(function(stock) {
-    var queryLower     = searchQuery.toLowerCase();
-    var symbolMatches  = stock.symbol.toLowerCase().includes(queryLower);
-    var nameMatches    = stock.name.toLowerCase().includes(queryLower);
-    var searchMatches  = symbolMatches || nameMatches;
-    var noFilter       = sectorFilter === '';
-    var sectorMatches  = noFilter || stock.sector === sectorFilter;
+    var queryLower = searchQuery.toLowerCase();
+    var symbolMatches = stock.symbol.toLowerCase().includes(queryLower);
+    var nameMatches = stock.name.toLowerCase().includes(queryLower);
+    var searchMatches = symbolMatches || nameMatches;
+    var noFilter = sectorFilter === '';
+    var sectorMatches = noFilter || stock.sector === sectorFilter;
     return searchMatches && sectorMatches;
   });
- 
-  // ── handleNewTrade (UNCHANGED) ───────────────────────────────────────
+
   function handleNewTrade(input: NewTradeInput): void {
     var newTrade: Trade = {
       ...input,
-      id:   `t${Date.now()}`,
+      id: `t${Date.now()}`,
       date: new Date().toISOString().split('T')[0],
     };
     setTradeHistory(function(previousTrades) {
@@ -87,12 +56,14 @@ function App() {
     });
   }
 
-
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24, fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ color: '#1E3A8A' }}>Stock Market Dashboard</h1>
- 
-      {/* ── FEATURE 1: Live Quotes — uses BOTH skeletons ── */}
+
+      <div style={{ margin: '0 -24px 24px -24px' }}>
+        <PriceTicker />
+      </div>
+
       <SuspenseBoundary
         fallback={
           <>
@@ -109,29 +80,25 @@ function App() {
           onFilterChange={setSectorFilter}
         />
       </SuspenseBoundary>
- 
-      {/* ── FEATURE 2: Portfolio Summary ── */}
+
       <SuspenseBoundary
         fallback={<TableSkeleton rows={3} cols={3} title="Portfolio Summary" />}
       >
         <PortfolioFeature availableStocks={stocks} />
       </SuspenseBoundary>
- 
-      {/* ── FEATURE 3: Positions ── */}
+
       <SuspenseBoundary
         fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
       >
         <PositionsFeature positions={positions} />
       </SuspenseBoundary>
- 
-      {/* ── FEATURE 4: Holdings ── */}
+
       <SuspenseBoundary
         fallback={<TableSkeleton rows={5} cols={5} title="Holdings" />}
       >
         <HoldingsFeature holdings={holdings} />
       </SuspenseBoundary>
- 
-      {/* ── FEATURE 5: Trade History + Form — uses TWO skeletons ── */}
+
       <SuspenseBoundary
         fallback={
           <>
@@ -147,10 +114,8 @@ function App() {
           onSubmitTrade={handleNewTrade}
         />
       </SuspenseBoundary>
- 
     </div>
   );
 }
- 
-export default App;
 
+export default App;
