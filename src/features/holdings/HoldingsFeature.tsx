@@ -1,6 +1,7 @@
 import React from 'react';
 import type{ Holding } from '../../types/stock.types';
 import DataTable   from '../../components/DataTable';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
  
 interface HoldingsFeatureProps {
   holdings: Holding[];
@@ -19,10 +20,41 @@ function pnlCell(value: unknown, suffix: string = ''): React.ReactNode {
   );
 }
  
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82ca9d', '#ffc658'];
+ 
 const HoldingsFeature: React.FC<HoldingsFeatureProps> = ({ holdings }) => {
+  const pieData = holdings.map((holding, index) => ({
+    name: holding.symbol,
+    value: holding.currentValue,
+    fill: COLORS[index % COLORS.length]
+  }));
   return (
     <>
       <h2 style={{ color: '#1E40AF' }}>Holdings</h2>
+      {holdings.length > 0 && (
+        <div style={{ width: '100%', height: 300, marginBottom: '20px' }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : '0'}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Pie>
+              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Value']} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      )}
       <DataTable<Holding>
         data={holdings}
         rowKey="id"

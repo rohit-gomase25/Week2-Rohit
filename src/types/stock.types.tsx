@@ -11,7 +11,7 @@ export interface Stock{
 }
 
 export interface Trade{
-    id : string,
+    id : string,  
     stockId : string,
     symbol: string,
     type : 'BUY' | 'SELL',
