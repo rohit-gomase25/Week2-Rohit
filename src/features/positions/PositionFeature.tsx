@@ -1,66 +1,64 @@
-import useInfiniteScroll from "../../hooks/useInfiniteScroll";
-import type { Position } from "../../types/stock.types";
-import DataTable from '../../components/DataTable';
-import { positions } from '../../data/stockData';
-
-export default function PositionFeature() {
-  const { visibleItems, bottomRef, hasMore } = useInfiniteScroll(positions, 5);
-
+import React from 'react';
+import type { Position } from '../../types/stock.types';
+import DataTable    from '../../components/DataTable';
+ 
+interface PositionsFeatureProps {
+  positions: Position[];
+}
+ 
+// Helper: render a number as a coloured cell
+// value  = the raw cell value
+// suffix = '%' for percentage columns, '' (empty) for dollar columns
+function pnlCell(value: unknown, suffix: string = ''): React.ReactNode {
+ 
+  // Convert the raw value to a number
+  var numberValue  = Number(value);
+ 
+  // Colour based on positive or negative
+  var isPositive   = numberValue >= 0;
+  var textColour   = isPositive ? '#166534' : '#991B1B';
+ 
+  // '+' before positive numbers (negative numbers already have '-')
+  var prefix = isPositive ? '+' : '';
+ 
+  // '$' before dollar values, nothing before percentages
+  var currencySign = suffix === '%' ? '' : '$';
+ 
   return (
-    <div>
-      <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Positions</h2>
+    <span style={{ color: textColour, fontWeight: 'bold' }}>
+      {prefix}{currencySign}{numberValue.toFixed(2)}{suffix}
+    </span>
+  );
+}
+ 
+const PositionsFeature: React.FC<PositionsFeatureProps> = ({ positions }) => {
+  return (
+    <>
+      <h2 style={{ color: '#1E40AF' }}>Positions</h2>
       <DataTable<Position>
-        data={visibleItems}
-        rowKey='id'
-        filterKey='symbol'
+        data={positions}
+        rowKey="id"
+        filterKey="symbol"
+        pageSize={10}
         columns={[
-          { key: 'symbol', header: 'Symbol', sortable: true },
-          { key: 'qty', header: 'Qty', sortable: true },
-          { key: 'avgPrice', header: 'Avg Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'ltp', header: 'LTP', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { 
-            key: 'pnl', 
-            header: 'P&L',
-            sortable: true,
-            render: (v) => {
-              const n = Number(v);
-              return (
-                <span style={{ color: n >= 0 ? '#166534' : '#991B1B', fontWeight: 'bold' }}>
-                  {n >= 0 ? '+' : ''}${n.toFixed(2)}
-                </span>
-              );
-            }
+          { key: 'symbol',   header: 'Symbol',    sortable: true },
+          { key: 'qty',      header: 'Qty',       sortable: true },
+          { key: 'avgPrice', header: 'Avg Price', sortable: true,
+            render: function(value) { return '$' + Number(value).toFixed(2); }
           },
-          { 
-            key: 'pnlPct', 
-            header: 'P&L %',
-            sortable: true,
-            render: (v) => {
-              const n = Number(v);
-              return (
-                <span style={{ color: n >= 0 ? '#166534' : '#991B1B' }}>
-                  {n >= 0 ? '+' : ''}{n.toFixed(2)}%
-                </span>
-              );
-            }
+          { key: 'ltp',      header: 'LTP',       sortable: true,
+            render: function(value) { return '$' + Number(value).toFixed(2); }
+          },
+          { key: 'pnl',    header: 'P&L',   sortable: true,
+            render: function(value) { return pnlCell(value); }
+          },
+          { key: 'pnlPct', header: 'P&L %', sortable: true,
+            render: function(value) { return pnlCell(value, '%'); }
           },
         ]}
       />
-
-      {/* Infinite Scroll Sentinel */}
-      <div ref={bottomRef} style={{ height: 1 }} />
-
-      {/* Status Messages */}
-      {hasMore && (
-        <p style={{ textAlign: 'center', color: '#666', marginTop: 16 }}>
-          Loading more positions...
-        </p>
-      )}
-      {!hasMore && visibleItems.length > 0 && (
-        <p style={{ textAlign: 'center', color: '#999', marginTop: 16 }}>
-          All {positions.length} positions loaded
-        </p>
-      )}
-    </div>
+    </>
   );
-}
+};
+ 
+export default PositionsFeature;
