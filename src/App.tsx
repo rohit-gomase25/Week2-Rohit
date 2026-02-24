@@ -1,10 +1,10 @@
 import { useState } from "react";
 
 // Data
-import { stocks, trades, holdings, positions } from './data/stockData';
+import { stocks, trades, holdings } from './data/stockData';
 
 // Types
-import type { Stock, Trade, Holding, Position } from './types/stock.types';
+import type { Stock, Trade, Holding} from './types/stock.types';
 
 
 // Components
@@ -15,6 +15,7 @@ import DataTable from './components/DataTable';
 import TradeForm from './components/TradeForm';
 import TradeFeature from './features/trades/TradeFeature';
 import LiveQuotesFeature from './features/quotes/LiveQuotesFeature';
+import PositionFeature from './features/positions/PositionFeature';
 
 function App() {
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
@@ -94,46 +95,7 @@ function App() {
         ]}
       />
 
-      {/* POSITIONS TABLE */}
-      <h2 style={{ color: '#1E40AF', marginTop: 32 }}>Positions</h2>
-      <DataTable<Position>
-        data={positions}
-        rowKey='id'
-        filterKey='symbol'
-        pageSize={7}
-        columns={[
-          { key: 'symbol', header: 'Symbol', sortable: true },
-          { key: 'qty', header: 'Qty', sortable: true },
-          { key: 'avgPrice', header: 'Avg Price', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { key: 'ltp', header: 'LTP', sortable: true, render: v => `$${Number(v).toFixed(2)}` },
-          { 
-            key: 'pnl', 
-            header: 'P&L',
-            sortable: true,
-            render: (v) => {
-              const n = Number(v);
-              return (
-                <span style={{ color: n >= 0 ? '#166534' : '#991B1B', fontWeight: 'bold' }}>
-                  {n >= 0 ? '+' : ''}${n.toFixed(2)}
-                </span>
-              );
-            }
-          },
-          { 
-            key: 'pnlPct', 
-            header: 'P&L %',
-            sortable: true,
-            render: (v) => {
-              const n = Number(v);
-              return (
-                <span style={{ color: n >= 0 ? '#166534' : '#991B1B' }}>
-                  {n >= 0 ? '+' : ''}{n.toFixed(2)}%
-                </span>
-              );
-            }
-          },
-        ]}
-      />
+      <PositionFeature />
 
       {/* TRADE HISTORY TABLE */}
       <TradeFeature
