@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 // --- Types ---
 type SortDir = 'asc' | 'desc' | null;
@@ -41,11 +41,6 @@ function DataTable<T extends object>({
   const [filterText, setFilterText] = useState('');
   const [page, setPage] = useState(1);
 
-  // Add a useEffect to reset page when filterText changes
-  useEffect(() => {
-    setPage(1);
-  }, [filterText]);
-
   // Toggle sort direction on each header click
   const handleSort = (key: keyof T) => {
     setSort(prev => ({
@@ -70,11 +65,11 @@ function DataTable<T extends object>({
     : sorted;
 
   // Pagination Logic
-  const totalPages = pageSize ? Math.ceil(filtered.length / pageSize) : 1;
-  const safePage = Math.min(page, Math.max(1, totalPages));
-  const paginated = pageSize
-    ? filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
-    : filtered;
+  // const totalPages = pageSize ? Math.ceil(filtered.length / pageSize) : 1;
+  // const safePage = Math.min(page, Math.max(1, totalPages));
+  // const paginated = pageSize
+  //   ? filtered.slice((safePage - 1) * pageSize, safePage * pageSize)
+  //   : filtered;
 
   if (data.length === 0) {
     return <p>{emptyMessage}</p>;
@@ -128,8 +123,8 @@ function DataTable<T extends object>({
         </thead>
 
         <tbody>
-          {/* Use paginated instead of filtered */}
-          {paginated.map((row, ri) => (
+          {/* Use filtered here since paginated is commented out */}
+          {filtered.map((row, ri) => (
             <tr 
               key={String(row[rowKey])} 
               onClick={() => onRowClick?.(row)} 
@@ -151,7 +146,7 @@ function DataTable<T extends object>({
       </table>
 
       {/* Pagination Controls */}
-      {pageSize && totalPages > 1 && (
+      {/* {pageSize && totalPages > 1 && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 8 }}>
           <button
             disabled={safePage <= 1}
@@ -174,7 +169,7 @@ function DataTable<T extends object>({
             Next →
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 }

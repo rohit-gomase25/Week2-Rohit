@@ -26,6 +26,7 @@ export const trades: Trade[] = [
   { id: 't5', stockId: '6', symbol: 'AMZN', type: 'BUY', quantity: 15, price: 168.00, date: '2024-03-18' },
   { id: 't6', stockId: '13', symbol: 'PYPL', type: 'BUY', quantity: 50, price: 58.00, date: '2024-03-20' },
   { id: 't7', stockId: '12', symbol: 'ADBE', type: 'BUY', quantity: 4, price: 520.00, date: '2024-03-22' },
+  
 ];
 
 export const holdings: Holding[] = [
