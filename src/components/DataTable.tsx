@@ -34,12 +34,11 @@ function DataTable<T extends object>({
   onRowClick, 
   emptyMessage = "No data available",
   filterKey,
-  pageSize
 }: DataTableProps<T>) {
   
   const [sort, setSort] = useState<SortState<T>>({ key: null, dir: null });
   const [filterText, setFilterText] = useState('');
-  const [page, setPage] = useState(1);
+  // const [page, setPage] = useState(1);
 
   // Toggle sort direction on each header click
   const handleSort = (key: keyof T) => {
@@ -85,7 +84,7 @@ function DataTable<T extends object>({
             value={filterText}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setFilterText(e.target.value);
-              setPage(1); // Reset to first page on search
+              // setPage(1); // Reset to first page on search
             }}
             style={{ 
               padding: '6px 10px', 
