@@ -79,5 +79,16 @@ export const positions: Position[] = [
   { id: 'p12', symbol: 'ADBE', qty: 4, avgPrice: 520.00, ltp: 540.30, pnl: 81.20, pnlPct: 3.90 },
   { id: 'p13', symbol: 'PYPL', qty: 50, avgPrice: 58.00, ltp: 62.10, pnl: 205.00, pnlPct: 7.07 },
   { id: 'p14', symbol: 'BRK.B', qty: 5, avgPrice: 390.00, ltp: 408.20, pnl: 91.00, pnlPct: 4.67 },
+  { id: 'p15', symbol: 'AAPL', qty: 8, avgPrice: 182.50, ltp: 189.30, pnl: 53.60, pnlPct: 3.71 },
+  { id: 'p16', symbol: 'MSFT', qty: 12, avgPrice: 365.00, ltp: 378.90, pnl: 166.80, pnlPct: 3.80 },
+  { id: 'p17', symbol: 'NVDA', qty: 5, avgPrice: 680.00, ltp: 726.10, pnl: 230.50, pnlPct: 6.78 },
+  { id: 'p18', symbol: 'TSLA', qty: 3, avgPrice: 245.00, ltp: 248.50, pnl: 10.50, pnlPct: 1.43 },
+  { id: 'p19', symbol: 'GOOGL', qty: 8, avgPrice: 148.00, ltp: 141.80, pnl: -49.60, pnlPct: -4.19 },
+  { id: 'p20', symbol: 'AMZN', qty: 10, avgPrice: 175.00, ltp: 175.20, pnl: 2.00, pnlPct: 0.11 },
+  { id: 'p21', symbol: 'JPM', qty: 12, avgPrice: 195.00, ltp: 196.40, pnl: 16.80, pnlPct: 0.72 },
+  { id: 'p22', symbol: 'META', qty: 6, avgPrice: 480.00, ltp: 485.40, pnl: 32.40, pnlPct: 1.13 },
+  { id: 'p23', symbol: 'V', qty: 5, avgPrice: 280.00, ltp: 282.15, pnl: 10.75, pnlPct: 0.77 },
+  { id: 'p24', symbol: 'NFLX', qty: 2, avgPrice: 575.00, ltp: 590.20, pnl: 30.40, pnlPct: 2.64 },
+  { id: 'p25', symbol: 'DIS', qty: 15, avgPrice: 112.00, ltp: 110.50, pnl: -22.50, pnlPct: -1.34 },
 
 ];
