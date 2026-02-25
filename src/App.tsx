@@ -7,6 +7,7 @@ import TableSkeleton from './skeletons/TableSkeleton';
 import CardGridSkeleton from './skeletons/CardGridSkeleton';
 import FormSkeleton from './skeletons/FormSkeleton';
 
+// Comparison Panels
 import StockComparePanel from './components/StockComparePanel';
 import PositionComparePanel from './components/PositionComparePanel';
 
@@ -33,11 +34,13 @@ const TradeFeature = lazy(function() {
 type NewTradeInput = Omit<Trade, 'id' | 'date'>;
 
 function App() {
+  // Local state for features not yet migrated to Zustand
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sectorFilter, setSectorFilter] = useState('');
   const [tradeHistory, setTradeHistory] = useState<Trade[]>(trades);
 
+  // Derived filtered stocks for Quotes feature
   var filteredStocks = stocks.filter(function(stock) {
     var queryLower = searchQuery.toLowerCase();
     var symbolMatches = stock.symbol.toLowerCase().includes(queryLower);
@@ -67,6 +70,7 @@ function App() {
         <PriceTicker />
       </div>
 
+      {/* Live Quotes Section */}
       <SuspenseBoundary
         fallback={
           <>
@@ -84,26 +88,28 @@ function App() {
         />
       </SuspenseBoundary>
 
+      {/* Portfolio Summary Section - RESTORED: availableStocks prop to fix TS error */}
       <SuspenseBoundary
         fallback={<TableSkeleton rows={3} cols={3} title="Portfolio Summary" />}
       >
         <PortfolioFeature availableStocks={stocks} />
       </SuspenseBoundary>
 
-      
+      {/* Positions Section (Zustand managed for Comparison) */}
       <SuspenseBoundary
-          fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
->
-          {/* No positions={positions} prop needed anymore! */}
-          <PositionsFeature />
+        fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
+      >
+        <PositionsFeature />
       </SuspenseBoundary>
 
+      {/* Holdings Section - Safeguarded with fallback to prevent "data is not iterable" */}
       <SuspenseBoundary
         fallback={<TableSkeleton rows={5} cols={5} title="Holdings" />}
       >
-        <HoldingsFeature holdings={holdings} />
+        <HoldingsFeature holdings={holdings || []} />
       </SuspenseBoundary>
 
+      {/* Trade History and Form Section */}
       <SuspenseBoundary
         fallback={
           <>
@@ -120,6 +126,7 @@ function App() {
         />
       </SuspenseBoundary>
 
+      {/* Floating Comparison UI Panels */}
       <StockComparePanel />
       <PositionComparePanel />
     </div>
