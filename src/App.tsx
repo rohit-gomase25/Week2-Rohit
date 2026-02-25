@@ -7,6 +7,8 @@ import TableSkeleton from './skeletons/TableSkeleton';
 import CardGridSkeleton from './skeletons/CardGridSkeleton';
 import FormSkeleton from './skeletons/FormSkeleton';
 
+import StockComparePanel from './components/StockComparePanel';
+
 const LiveQuotesFeature = lazy(function() {
   return import('./features/quotes/LiveQuotesFeature');
 });
@@ -114,6 +116,9 @@ function App() {
           onSubmitTrade={handleNewTrade}
         />
       </SuspenseBoundary>
+
+
+      <StockComparePanel />
     </div>
   );
 }
