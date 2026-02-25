@@ -1,6 +1,6 @@
 import { lazy, useState } from 'react';
 import PriceTicker from './components/PriceTicker';
-import { stocks, trades, positions, holdings } from './data/stockData';
+import { stocks, trades, holdings } from './data/stockData';
 import type { Stock, Trade } from './types/stock.types';
 import SuspenseBoundary from './boundaries/SuspenseBoundary';
 import TableSkeleton from './skeletons/TableSkeleton';
@@ -8,6 +8,7 @@ import CardGridSkeleton from './skeletons/CardGridSkeleton';
 import FormSkeleton from './skeletons/FormSkeleton';
 
 import StockComparePanel from './components/StockComparePanel';
+import PositionComparePanel from './components/PositionComparePanel';
 
 const LiveQuotesFeature = lazy(function() {
   return import('./features/quotes/LiveQuotesFeature');
@@ -89,10 +90,12 @@ function App() {
         <PortfolioFeature availableStocks={stocks} />
       </SuspenseBoundary>
 
+      
       <SuspenseBoundary
-        fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
-      >
-        <PositionsFeature positions={positions} />
+          fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
+>
+          {/* No positions={positions} prop needed anymore! */}
+          <PositionsFeature />
       </SuspenseBoundary>
 
       <SuspenseBoundary
@@ -117,8 +120,8 @@ function App() {
         />
       </SuspenseBoundary>
 
-
       <StockComparePanel />
+      <PositionComparePanel />
     </div>
   );
 }
