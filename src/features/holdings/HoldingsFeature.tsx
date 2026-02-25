@@ -32,7 +32,7 @@ const HoldingsFeature: React.FC<HoldingsFeatureProps> = ({ holdings }) => {
     <>
       <h2 style={{ color: '#1E40AF' }}>Holdings</h2>
       {holdings.length > 0 && (
-        <div style={{ width: '100%', height: 300, marginBottom: '20px' }}>
+        <div style={{ width: '100%', height: 400, marginBottom: '20px' }}>
           <ResponsiveContainer>
             <PieChart>
               <Pie
