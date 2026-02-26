@@ -71,7 +71,7 @@ const HoldingsFeature: React.FC = () => {
                 <button
                   onClick={() => toggleHoldingCompare(item)}
                   style={{
-                    background: inCompare ? '#3B82F6' : '#E5E7EB',
+                    background: inCompare ? '#4fe777' : '#E5E7EB',
                     color: inCompare ? '#fff' : '#374151',
                     border: 'none', borderRadius: 4, padding: '4px 10px', cursor: 'pointer'
                   }}
