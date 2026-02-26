@@ -1,6 +1,7 @@
 import { lazy, useState } from 'react';
 import PriceTicker from './components/PriceTicker';
-import { stocks, trades, holdings } from './data/stockData';
+// REMOVED: holdings from the data import since it's now in useHoldingsStore
+import { stocks, trades } from './data/stockData'; 
 import type { Stock, Trade } from './types/stock.types';
 import SuspenseBoundary from './boundaries/SuspenseBoundary';
 import TableSkeleton from './skeletons/TableSkeleton';
@@ -10,6 +11,7 @@ import FormSkeleton from './skeletons/FormSkeleton';
 // Comparison Panels
 import StockComparePanel from './components/StockComparePanel';
 import PositionComparePanel from './components/PositionComparePanel';
+import HoldingComparePanel from './components/HoldingComparePanel'; // ADDED
 
 const LiveQuotesFeature = lazy(function() {
   return import('./features/quotes/LiveQuotesFeature');
@@ -88,7 +90,7 @@ function App() {
         />
       </SuspenseBoundary>
 
-      {/* Portfolio Summary Section - RESTORED: availableStocks prop to fix TS error */}
+      {/* Portfolio Summary Section */}
       <SuspenseBoundary
         fallback={<TableSkeleton rows={3} cols={3} title="Portfolio Summary" />}
       >
@@ -102,11 +104,11 @@ function App() {
         <PositionsFeature />
       </SuspenseBoundary>
 
-      {/* Holdings Section - Safeguarded with fallback to prevent "data is not iterable" */}
+      {/* Holdings Section - UPDATED: Removed holdings prop, now handled by Zustand internally */}
       <SuspenseBoundary
         fallback={<TableSkeleton rows={5} cols={5} title="Holdings" />}
       >
-        <HoldingsFeature holdings={holdings || []} />
+        <HoldingsFeature />
       </SuspenseBoundary>
 
       {/* Trade History and Form Section */}
@@ -129,6 +131,7 @@ function App() {
       {/* Floating Comparison UI Panels */}
       <StockComparePanel />
       <PositionComparePanel />
+      <HoldingComparePanel /> {/* ADDED */}
     </div>
   );
 }
