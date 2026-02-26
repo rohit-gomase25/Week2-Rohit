@@ -1,68 +1,47 @@
-import { lazy, useState } from 'react';
+import { lazy, useState, useEffect } from 'react';
 import PriceTicker from './components/PriceTicker';
-// REMOVED: holdings from the data import since it's now in useHoldingsStore
-import { stocks, trades } from './data/stockData'; 
-import type { Stock, Trade } from './types/stock.types';
+import { stocks } from './data/stockData'; 
+import type { Stock } from './types/stock.types';
 import SuspenseBoundary from './boundaries/SuspenseBoundary';
 import TableSkeleton from './skeletons/TableSkeleton';
 import CardGridSkeleton from './skeletons/CardGridSkeleton';
 import FormSkeleton from './skeletons/FormSkeleton';
 
+// Stores
+import { usePortfolioStore } from './stores/usePortfolioStore';
+
 // Comparison Panels
 import StockComparePanel from './components/StockComparePanel';
 import PositionComparePanel from './components/PositionComparePanel';
-import HoldingComparePanel from './components/HoldingComparePanel'; // ADDED
+import HoldingComparePanel from './components/HoldingComparePanel';
 
-const LiveQuotesFeature = lazy(function() {
-  return import('./features/quotes/LiveQuotesFeature');
-});
-
-const PortfolioFeature = lazy(function() {
-  return import('./features/portfolio/PortfolioFeature');
-});
-
-const PositionsFeature = lazy(function() {
-  return import('./features/positions/PositionFeature');
-});
-
-const HoldingsFeature = lazy(function() {
-  return import('./features/holdings/HoldingsFeature');
-});
-
-const TradeFeature = lazy(function() {
-  return import('./features/trades/TradeFeature');
-});
-
-type NewTradeInput = Omit<Trade, 'id' | 'date'>;
+const LiveQuotesFeature = lazy(() => import('./features/quotes/LiveQuotesFeature'));
+const PortfolioFeature = lazy(() => import('./features/portfolio/PortfolioFeature'));
+const PositionsFeature = lazy(() => import('./features/positions/PositionFeature'));
+const HoldingsFeature = lazy(() => import('./features/holdings/HoldingsFeature'));
+const TradeFeature = lazy(() => import('./features/trades/TradeFeature'));
 
 function App() {
-  // Local state for features not yet migrated to Zustand
+  // Local state for UI selection and filtering only
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sectorFilter, setSectorFilter] = useState('');
-  const [tradeHistory, setTradeHistory] = useState<Trade[]>(trades);
 
-  // Derived filtered stocks for Quotes feature
-  var filteredStocks = stocks.filter(function(stock) {
-    var queryLower = searchQuery.toLowerCase();
-    var symbolMatches = stock.symbol.toLowerCase().includes(queryLower);
-    var nameMatches = stock.name.toLowerCase().includes(queryLower);
-    var searchMatches = symbolMatches || nameMatches;
-    var noFilter = sectorFilter === '';
-    var sectorMatches = noFilter || stock.sector === sectorFilter;
+  // 1. Initialize Portfolio Store on mount
+  const loadPortfolio = usePortfolioStore((state) => state.loadPortfolio);
+  
+  useEffect(() => {
+    loadPortfolio(stocks);
+  }, [loadPortfolio]);
+
+  // 2. Derived filtered stocks for Quotes feature
+  const filteredStocks = stocks.filter((stock) => {
+    const queryLower = searchQuery.toLowerCase();
+    const searchMatches = stock.symbol.toLowerCase().includes(queryLower) || 
+                          stock.name.toLowerCase().includes(queryLower);
+    const sectorMatches = sectorFilter === '' || stock.sector === sectorFilter;
     return searchMatches && sectorMatches;
   });
-
-  function handleNewTrade(input: NewTradeInput): void {
-    var newTrade: Trade = {
-      ...input,
-      id: `t${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
-    };
-    setTradeHistory(function(previousTrades) {
-      return [newTrade, ...previousTrades];
-    });
-  }
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24, fontFamily: 'Arial, sans-serif' }}>
@@ -90,28 +69,22 @@ function App() {
         />
       </SuspenseBoundary>
 
-      {/* Portfolio Summary Section */}
-      <SuspenseBoundary
-        fallback={<TableSkeleton rows={3} cols={3} title="Portfolio Summary" />}
-      >
-        <PortfolioFeature availableStocks={stocks} />
+      {/* Portfolio Summary Section - Clean (Zustand) */}
+      <SuspenseBoundary fallback={<TableSkeleton rows={3} cols={3} title="Portfolio Summary" />}>
+        <PortfolioFeature /> 
       </SuspenseBoundary>
 
-      {/* Positions Section (Zustand managed for Comparison) */}
-      <SuspenseBoundary
-        fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}
-      >
+      {/* Positions Section (Zustand managed) */}
+      <SuspenseBoundary fallback={<TableSkeleton rows={5} cols={6} title="Positions" />}>
         <PositionsFeature />
       </SuspenseBoundary>
 
-      {/* Holdings Section - UPDATED: Removed holdings prop, now handled by Zustand internally */}
-      <SuspenseBoundary
-        fallback={<TableSkeleton rows={5} cols={5} title="Holdings" />}
-      >
+      {/* Holdings Section (Zustand managed) */}
+      <SuspenseBoundary fallback={<TableSkeleton rows={5} cols={5} title="Holdings" />}>
         <HoldingsFeature />
       </SuspenseBoundary>
 
-      {/* Trade History and Form Section */}
+      {/* Trade History and Form Section - UPDATED: Removed tradeHistory and onSubmitTrade props */}
       <SuspenseBoundary
         fallback={
           <>
@@ -121,17 +94,15 @@ function App() {
         }
       >
         <TradeFeature
-          tradeHistory={tradeHistory}
           stocks={stocks}
           selectedStock={selectedStock}
-          onSubmitTrade={handleNewTrade}
         />
       </SuspenseBoundary>
 
       {/* Floating Comparison UI Panels */}
       <StockComparePanel />
       <PositionComparePanel />
-      <HoldingComparePanel /> {/* ADDED */}
+      <HoldingComparePanel />
     </div>
   );
 }
